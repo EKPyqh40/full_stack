@@ -22,6 +22,13 @@ const App = () => {
     });
   }, []);
 
+  const setDisappearingNotification = (message, type) => {
+    setNotification({ message: message, type: type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 5000);
+  };
+
   const addPerson = (event) => {
     event.preventDefault();
 
@@ -31,22 +38,35 @@ const App = () => {
       );
       const person = persons.find((person) => person.name === newName);
       const changedPerson = { ...person, number: newNumber };
-      personService.update(person.id, changedPerson).then((returnedPerson) => {
-        setPersons(
-          persons.map((p) => (p.id !== person.id ? p : returnedPerson))
-        );
-      });
+      personService
+        .update(person.id, changedPerson)
+        .then((returnedPerson) => {
+          setPersons(
+            persons.map((p) => (p.id !== person.id ? p : returnedPerson))
+          );
+        })
+        .catch((error) => {
+          setDisappearingNotification(
+            JSON.parse(error.request.response).error,
+            "error"
+          );
+        });
     } else {
       const newPerson = { name: newName, number: newNumber };
-      personService.create(newPerson).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setNewName("");
-        setNewNumber("");
-        setNotification({ message: `Added ${newPerson.name}`, type: "succes" });
-        setTimeout(() => {
-          setNotification(null);
-        }, 5000);
-      });
+      personService
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNewName("");
+          setNewNumber("");
+          setDisappearingNotification(`Added ${newPerson.name}`, "succes");
+        })
+        .catch((error) => {
+          setDisappearingNotification(
+            JSON.parse(error.request.response).error,
+            "error"
+          );
+        });
     }
   };
 
