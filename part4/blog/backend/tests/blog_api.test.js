@@ -16,6 +16,14 @@ beforeEach(async () => {
     let blogObject = new Blog(blog);
     await blogObject.save();
   }
+  await User.deleteMany({});
+  const saltRounds = 1;
+  for (let user of helper.initialUsers) {
+    let passwordHash = await bcrypt.hash(user.password, saltRounds);
+    user.passwordHash = passwordHash;
+    let userObject = new User(user);
+    await userObject.save();
+  }
 });
 
 test('blogs are returned as json', async () => {
@@ -37,7 +45,13 @@ test('the first blog is about react patterns', async () => {
   assert(contents.includes('React patterns'));
 });
 
-test('Valid POST request test ', async () => {
+test('Valid POST request test', async () => {
+  // const usersAtStart = await helper.usersInDb();
+  // const userToLogin = usersAtStart[0];
+  const userToLogin = helper.initialUsers[0]; // need raw password, only stored in initalUsers
+  loginResponse = await api.post(`/api/login`).send(userToLogin).expect(200);
+  const token = loginResponse.body.token;
+
   const newBlog = {
     title: '<3',
     author: 'Christophe Vakaet',
@@ -47,6 +61,7 @@ test('Valid POST request test ', async () => {
 
   await api
     .post('/api/blogs')
+    .set('Authorization', 'Bearer '.concat(token))
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/);
@@ -56,6 +71,27 @@ test('Valid POST request test ', async () => {
   const contents = blogsAtEnd.map((n) => n.title);
 
   assert(contents.includes('<3'));
+});
+
+test('Invalid POST request test (no Authorization)', async () => {
+  const newBlog = {
+    title: '<3',
+    author: 'Christophe Vakaet',
+    url: 'https://vakaet.be/',
+    likes: 99,
+  };
+
+  const result = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
+    .expect('Content-Type', /application\/json/);
+
+  console.log('result.body.error', result.body.error);
+  assert(result.body.error.includes('token invalid'));
+
+  const blogsAtEnd = await helper.blogsInDb();
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length);
 });
 
 test('Check id is set', async () => {

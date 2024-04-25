@@ -9,7 +9,7 @@ usersRouter.post('/', async (request, response) => {
   } else if (password.length < 3) {
     return response.status(400).json({ error: 'password too short' });
   }
-  const saltRounds = 10;
+  const saltRounds = 12;
   const passwordHash = await bcrypt.hash(password, saltRounds);
 
   const user = new User({

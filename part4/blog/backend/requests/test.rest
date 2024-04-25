@@ -1,3 +1,7 @@
+GET http://localhost:3003/api/blogs/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwiaWQiOiI2NjI5NzA3NTU2ZTllZTMxZDljMThlMzQiLCJpYXQiOjE3MTQwMjc3OTl9.vWq1fkzddIPI-D7tuEYvpdhSbHQmoVxX980-yazeblQ
+
+###
 POST http://localhost:3003/api/blogs/ HTTP/1.1
 content-type: application/json
 
@@ -13,7 +17,77 @@ POST http://localhost:3003/api/users/ HTTP/1.1
 content-type: application/json
 
 {
+    "username": "OtherAccount",
+    "name": "otheraccount",
+    "password": "Welkom01"
+}
+
+###
+POST http://localhost:3003/api/users/ HTTP/1.1
+content-type: application/json
+
+{
     "username": "Admin",
     "name": "admin",
     "password": "Welkom01"
 }
+### Login
+POST http://localhost:3003/api/login/ HTTP/1.1
+content-type: application/json
+
+{
+    "username": "Admin",
+    "password": "Welkom01"
+}
+### Login
+POST http://localhost:3003/api/login/ HTTP/1.1
+content-type: application/json
+
+{
+    "username": "Admin",
+    "password": "Welkom0"
+}
+### Authentication test (succes)
+POST http://localhost:3003/api/blogs/ HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwiaWQiOiI2NjI5NzA3NTU2ZTllZTMxZDljMThlMzQiLCJpYXQiOjE3MTQwMjc3OTl9.vWq1fkzddIPI-D7tuEYvpdhSbHQmoVxX980-yazeblQ
+
+{
+    "title": "Authorized with middleware",
+    "author": "749874",
+    "url": "franny",
+    "likes": 1
+}
+### Authentication test (fail)
+POST http://localhost:3003/api/blogs/ HTTP/1.1
+content-type: application/json
+Authorization: Bearer ayJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwiaWQiOiI2NjI5NzA3NTU2ZTllZTMxZDljMThlMzQiLCJpYXQiOjE3MTQwMjc3OTl9.vWq1fkzddIPI-D7tuEYvpdhSbHQmoVxX980-yazeblQ
+
+{
+    "title": "Authorized",
+    "author": "111",
+    "url": "betty",
+    "likes": 0
+}
+### Authentication test Delete (fail, no token)
+DELETE http://localhost:3003/api/blogs/662a05ba8bf787bf2a665238 HTTP/1.1
+content-type: application/json
+
+### Login wrong user
+POST http://localhost:3003/api/login/ HTTP/1.1
+content-type: application/json
+
+{
+    "username": "OtherAccount",
+    "password": "Welkom01"
+}
+### Authentication test Delete (fail, wrong user)
+DELETE http://localhost:3003/api/blogs/662a05ba8bf787bf2a665238 HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik90aGVyQWNjb3VudCIsImlkIjoiNjYyYTAyODI0ZTU2ZjFhNTAyN2FlM2EyIiwiaWF0IjoxNzE0MDI5Mjk5fQ.gppHuh7id0_hlEkgCKHuAeIHBaHuyHp-Qj0djroD538
+
+### Authentication test Delete (succes)
+DELETE http://localhost:3003/api/blogs/662a05ba8bf787bf2a665238 HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwiaWQiOiI2NjI5NzA3NTU2ZTllZTMxZDljMThlMzQiLCJpYXQiOjE3MTQwMjc3OTl9.vWq1fkzddIPI-D7tuEYvpdhSbHQmoVxX980-yazeblQ
+
