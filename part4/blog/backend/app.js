@@ -26,7 +26,6 @@ app.use(express.json());
 app.use(middleware.requestLogger);
 app.use(
   '/api/blogs',
-  middleware.tokenExtractor,
   middleware.userExtractor,
   blogRouter
 );

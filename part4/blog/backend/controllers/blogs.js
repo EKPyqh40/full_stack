@@ -1,7 +1,5 @@
 const blogRouter = require('express').Router();
 const Blog = require('../models/blog');
-const User = require('../models/user');
-const { userExtractor } = require('../utils/middleware');
 
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
@@ -10,15 +8,7 @@ blogRouter.get('/', async (request, response) => {
 
 blogRouter.post('/', async (request, response) => {
   const body = request.body;
-
-  const user = await User.findById(request.user.id);
-
-  // assign first user if no user
-  // let user = await User.findById(body.userId);
-  // if (!user) {
-  //   const users = await User.find({});
-  //   user = users[0];
-  // }
+  const user = request.user;
 
   const blog = new Blog({
     title: body.title,
@@ -44,7 +34,7 @@ blogRouter.delete('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id);
 
   if (blog.user.toString() !== request.user.id.toString()) {
-    return response.status(401).json({ error: 'wrong user' });
+    return response.status(403).json({ error: 'user not authorized' });
   }
 
   await Blog.findByIdAndDelete(request.params.id);
