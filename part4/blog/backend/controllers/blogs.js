@@ -1,12 +1,13 @@
 const blogRouter = require('express').Router();
 const Blog = require('../models/blog');
+const userExtractor = require('../utils/middleware').userExtractor;
 
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
   response.json(blogs);
 });
 
-blogRouter.post('/', async (request, response) => {
+blogRouter.post('/', userExtractor, async (request, response) => {
   const body = request.body;
   const user = request.user;
 
@@ -30,9 +31,10 @@ blogRouter.get('/:id', async (request, response) => {
   blog ? response.json(blog) : response.status(404).end();
 });
 
-blogRouter.delete('/:id', async (request, response) => {
+blogRouter.delete('/:id', userExtractor, async (request, response) => {
   const blog = await Blog.findById(request.params.id);
-
+  console.log('test', blog); // Issue is that there is no blog with a user, should work on this, i.e. can only delete if a blog is created with user and that blgo should be deleted by that user
+  console.log('DELETE', blog.user.toString(), request.user.id);
   if (blog.user.toString() !== request.user.id.toString()) {
     return response.status(403).json({ error: 'user not authorized' });
   }

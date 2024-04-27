@@ -88,7 +88,7 @@ test('Invalid POST request test (no Authorization)', async () => {
     .expect('Content-Type', /application\/json/);
 
   console.log('result.body.error', result.body.error);
-  assert(result.body.error.includes('token invalid'));
+  assert(result.body.error.includes('token missing'));
 
   const blogsAtEnd = await helper.blogsInDb();
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length);
@@ -100,6 +100,10 @@ test('Check id is set', async () => {
 });
 
 test('Autocomplete likes', async () => {
+  const userToLogin = helper.initialUsers[0]; // need raw password, only stored in initalUsers
+  loginResponse = await api.post(`/api/login`).send(userToLogin).expect(200);
+  const token = loginResponse.body.token;
+
   const newBlog = {
     title: '<3',
     author: 'Christophe Vakaet',
@@ -108,6 +112,7 @@ test('Autocomplete likes', async () => {
 
   const returnedObject = await api
     .post('/api/blogs')
+    .set('Authorization', 'Bearer '.concat(token))
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/); // not strictly necessary
@@ -115,24 +120,34 @@ test('Autocomplete likes', async () => {
 });
 
 test('Title required for POST', async () => {
+  const userToLogin = helper.initialUsers[0]; // need raw password, only stored in initalUsers
+  loginResponse = await api.post(`/api/login`).send(userToLogin).expect(200);
+  const token = loginResponse.body.token;
+
   const newBlog = {
     author: 'Christophe Vakaet',
     url: 'https://vakaet.be/',
   };
   await api
     .post('/api/blogs')
+    .set('Authorization', 'Bearer '.concat(token))
     .send(newBlog)
     .expect(400)
     .expect('Content-Type', /application\/json/); // not strictly necessary
 });
 
 test('Url required for POST', async () => {
+  const userToLogin = helper.initialUsers[0]; // need raw password, only stored in initalUsers
+  loginResponse = await api.post(`/api/login`).send(userToLogin).expect(200);
+  const token = loginResponse.body.token;
+
   const newBlog = {
     title: '<3',
     author: 'Christophe Vakaet',
   };
   await api
     .post('/api/blogs')
+    .set('Authorization', 'Bearer '.concat(token))
     .send(newBlog)
     .expect(400)
     .expect('Content-Type', /application\/json/); // not strictly necessary
@@ -161,10 +176,17 @@ describe('viewing a specific blog', () => {
 
 describe('deletion of a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
+    const userToLogin = helper.initialUsers[0]; // need raw password, only stored in initalUsers
+    loginResponse = await api.post(`/api/login`).send(userToLogin).expect(200);
+    const token = loginResponse.body.token;
+
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', 'Bearer '.concat(token))
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
 
