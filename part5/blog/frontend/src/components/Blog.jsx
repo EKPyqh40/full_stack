@@ -1,9 +1,7 @@
 import { useState } from 'react'
-import blogService from '../services/blogs'
 
 const Blog = ({ blog, likeBlog, deleteBlog }) => {
   const [expanded, setExpanded] = useState(false)
-  // const [likes, setLikes] = useState(blog.likes); // Downside of keeping the likes in Blog is that it doesn't update the order, I think this is okay, changing order while liking seems annoying.
 
   if (!expanded) {
     return (
@@ -13,7 +11,6 @@ const Blog = ({ blog, likeBlog, deleteBlog }) => {
       </div>
     )
   }
-  console.log(blog)
   return (
     <div className="blog">
       <div>
