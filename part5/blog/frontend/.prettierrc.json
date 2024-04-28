@@ -1,4 +1,6 @@
 {
+    "endOfLine": "lf",
+    "semi": false,
     "singleQuote": true,
     "overrides": [
         {

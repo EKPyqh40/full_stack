@@ -1,12 +1,12 @@
 const Notification = ({ notification }) => {
   if (!notification) {
-    return null;
+    return null
   }
   const type =
-    notification.type === "succes" || notification.type === "error"
+    notification.type === 'succes' || notification.type === 'error'
       ? notification.type
-      : "neutral";
-  return <div className={type}>{notification.message}</div>;
-};
+      : 'neutral'
+  return <div className={type}>{notification.message}</div>
+}
 
-export default Notification;
+export default Notification
