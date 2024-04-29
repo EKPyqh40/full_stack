@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, likeBlog, deleteBlog }) => {
+const Blog = ({ blog, likeBlog, deleteBlog, username }) => {
   const [expanded, setExpanded] = useState(false)
 
   if (!expanded) {
@@ -22,9 +22,11 @@ const Blog = ({ blog, likeBlog, deleteBlog }) => {
         likes {blog.likes} <button onClick={likeBlog}>like</button>
       </div>
       <div>{blog.user.name}</div>
-      <div>
-        <button onClick={deleteBlog}>remove</button>
-      </div>
+      {blog.user.username === username ? (
+        <div>
+          <button onClick={deleteBlog}>remove</button>
+        </div>
+      ) : null}
     </div>
   )
 }

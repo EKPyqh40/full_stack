@@ -63,6 +63,7 @@ const App = () => {
   const addBlog = async (blogObject) => {
     try {
       const returnedBlog = await blogService.create(blogObject)
+      console.log('returnedBlog', returnedBlog)
       setBlogs(blogs.concat(returnedBlog))
     } catch (exception) {
       setDisappearingNotification(`Failled creation, ${exception}`, 'error')
@@ -169,6 +170,7 @@ const App = () => {
             blog={blog}
             likeBlog={() => likeBlog(blog)}
             deleteBlog={() => deleteBlog(blog)}
+            username={user.username}
           />
         ))}
     </div>
